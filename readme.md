@@ -52,11 +52,8 @@ Backend:
 - Spring Boot
 - Spring Data JPA
 - Maven
-- H2 (in-memory database for demo)
+- Postgres database 
 
-Tooling:
-- Maven Wrapper
-- Lombok
 
 ---
 
