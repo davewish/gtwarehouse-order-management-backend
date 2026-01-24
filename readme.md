@@ -2,7 +2,7 @@
 
 This project demonstrates a real-world inventory and order processing system,
 designed with clean architecture and enterprise best practices commonly used in
-German software development teams.
+ software development teams.
 
 The focus is on maintainability, correctness, and clear business logic rather
 than UI complexity.
