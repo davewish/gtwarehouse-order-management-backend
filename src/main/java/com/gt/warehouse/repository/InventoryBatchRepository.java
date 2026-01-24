@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface InventoryBatchRepository extends JpaRepository<InventoryBatch,Long> {
-  List<InventoryBatch> findByProductAndQuantityGreaterThanByExpiryDateAsc(Product product ,Integer quantity);
+  List<InventoryBatch> findByProductAndQuantityGreaterThanOrderByExpiryDateAsc(Product product ,Integer quantity);
   List<Integer> findByExpiryDateBefore(LocalDate date);
 
 
