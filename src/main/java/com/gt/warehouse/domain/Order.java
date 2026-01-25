@@ -13,6 +13,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.criteria.CriteriaBuilder.Case;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,7 +36,7 @@ public class Order {
   @Column(nullable = false)
   private OrderStatus status ;
   @OneToMany(mappedBy = "order" ,cascade = CascadeType.ALL)
-  private List<OrderItem> items;
+  private List<OrderItem> items= new ArrayList<>();
   @Column(nullable = false, updatable = false)
   private LocalDateTime createdAt;
 

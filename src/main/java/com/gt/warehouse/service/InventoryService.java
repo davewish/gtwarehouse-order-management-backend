@@ -1,32 +1,63 @@
 package com.gt.warehouse.service;
 
 import com.gt.warehouse.domain.InventoryBatch;
-import com.gt.warehouse.domain.Product;
+import com.gt.warehouse.domain.OrderItem;
+import com.gt.warehouse.domain.OrderItemBatchAllocation;
 import com.gt.warehouse.repository.InventoryBatchRepository;
+import java.util.ArrayList;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
+
 public class InventoryService {
+
   private final InventoryBatchRepository inventoryBatchRepository;
 
+  public InventoryService(InventoryBatchRepository inventoryBatchRepository) {
+    this.inventoryBatchRepository = inventoryBatchRepository;
+  }
+
   @Transactional
-  public  void reserveStock(Product product, int requiredQuantity){
-    List<InventoryBatch> batches= inventoryBatchRepository.findByProductAndQuantityGreaterThanOrderByExpiryDateAsc(product,0);
-    int remaining= requiredQuantity;
-    for(InventoryBatch batch: batches){
-      if(remaining < 0) break;
-      int available= batch.getQuantity();
-      int toDeduct=Math.min(available , remaining);
-      batch.setQuantity(available - toDeduct);
+  public List<OrderItemBatchAllocation> reserveStock(OrderItem orderItem) {
+
+    List<InventoryBatch> batches =
+        inventoryBatchRepository.findAvailableBatchesForUpdate(orderItem.getProduct());
+
+    int remaining = orderItem.getQuantity();
+    List<OrderItemBatchAllocation> allocations = new ArrayList<>();
+
+    for (InventoryBatch batch : batches) {
+      if (remaining <= 0) break;
+
+      int available = batch.getQuantity();
+      int toAllocate = Math.min(available, remaining);
+
+      batch.setQuantity(available - toAllocate);
+
+      OrderItemBatchAllocation allocation = new OrderItemBatchAllocation();
+      allocation.setOrderItem(orderItem);
+      allocation.setBatch(batch);
+      allocation.setQuantityAllocated(toAllocate);
+
+      allocations.add(allocation);
+      remaining -= toAllocate;
     }
-     if( remaining > 0 ){
-       throw new IllegalArgumentException("Insufficient stock for product : " + product.getSku());
-     }
+
+    if (remaining > 0)
+      throw new IllegalStateException("Insufficient stock");
+
+    return allocations;
+  }
+
+
+  @Transactional
+  public void returnStock(OrderItem orderItem) {
+    for (OrderItemBatchAllocation allocation : orderItem.getBatchAllocations()) {
+      InventoryBatch batch = allocation.getBatch();
+      batch.setQuantity(batch.getQuantity() + allocation.getQuantityAllocated());
+    }
   }
 
 }
