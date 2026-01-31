@@ -46,7 +46,7 @@ public class InventoryService {
     }
 
     if (remaining > 0)
-      throw new IllegalStateException("Insufficient stock");
+      throw new IllegalArgumentException("Insufficient stock");
 
     return allocations;
   }

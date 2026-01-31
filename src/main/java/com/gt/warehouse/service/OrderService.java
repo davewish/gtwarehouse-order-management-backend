@@ -29,7 +29,6 @@ public class OrderService {
 
 
   @Transactional
-
   public Order createOrder(CreateOrderRequest request) {
     List<OrderItem> orderItems = request.items().stream()
         .map(req -> OrderItem.builder()
