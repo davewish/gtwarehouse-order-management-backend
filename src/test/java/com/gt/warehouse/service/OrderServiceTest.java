@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class OrderServiceTest {
+
   @Mock
   private ProductRepository productRepository;
   @Mock
@@ -29,15 +30,19 @@ public class OrderServiceTest {
   private InventoryService inventoryService;
   @InjectMocks
   private OrderService orderService;
-@Test
-  void shouldCreateOrderAndReserveStock(){
-    Product product= Product.builder().id(1L).name("Milk").sku("mlk0234").build();
+
+  @Test
+  void shouldCreateOrderAndReserveStock() {
+
+    Product product = Product.builder().id(1L).name("Milk").sku("mlk0234").build();
     when(productRepository.findById(1L)).thenReturn(Optional.of(product));
-  OrderItemRequest itemRequest = new OrderItemRequest(1L,5);
-  List<OrderItemRequest> itemRequests=List.of(itemRequest);
-  CreateOrderRequest createOrderRequest= new CreateOrderRequest(itemRequests);
-     orderService.createOrder(createOrderRequest);
-     verify(orderRepository).save(any(Order.class));
-     verify(inventoryService).reserveStock(any(OrderItem.class));
+    OrderItemRequest itemRequest = new OrderItemRequest(1L, 5);
+
+    List<OrderItemRequest> itemRequests = List.of(itemRequest);
+    CreateOrderRequest createOrderRequest = new CreateOrderRequest(itemRequests);
+    orderService.createOrder(createOrderRequest);
+
+    verify(orderRepository).save(any(Order.class));
+    verify(inventoryService).reserveStock(any(OrderItem.class));
   }
 }
