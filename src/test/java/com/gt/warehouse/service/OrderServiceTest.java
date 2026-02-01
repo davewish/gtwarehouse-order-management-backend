@@ -1,5 +1,6 @@
 package com.gt.warehouse.service;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,14 +36,30 @@ public class OrderServiceTest {
   void shouldCreateOrderAndReserveStock() {
 
     Product product = Product.builder().id(1L).name("Milk").sku("mlk0234").build();
-    when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+
     OrderItemRequest itemRequest = new OrderItemRequest(1L, 5);
 
     List<OrderItemRequest> itemRequests = List.of(itemRequest);
     CreateOrderRequest createOrderRequest = new CreateOrderRequest(itemRequests);
+    when(productRepository.findById(1L)).thenReturn(Optional.of(product));
     orderService.createOrder(createOrderRequest);
 
     verify(orderRepository).save(any(Order.class));
     verify(inventoryService).reserveStock(any(OrderItem.class));
+  }
+  @Test
+  void shouldThrowExceptionWhenProductNotFound(){
+
+
+    OrderItemRequest itemRequest = new OrderItemRequest(2L, 5);
+
+    List<OrderItemRequest> itemRequests = List.of(itemRequest);
+    CreateOrderRequest createOrderRequest = new CreateOrderRequest(itemRequests);
+
+    when(productRepository.findById(2L)).thenReturn(Optional.empty());
+
+   assertThrows( IllegalArgumentException.class ,()-> orderService.createOrder(createOrderRequest));
+
+
   }
 }

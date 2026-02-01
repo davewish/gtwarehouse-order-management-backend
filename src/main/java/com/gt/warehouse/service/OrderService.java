@@ -32,7 +32,8 @@ public class OrderService {
   public Order createOrder(CreateOrderRequest request) {
     List<OrderItem> orderItems = request.items().stream()
         .map(req -> OrderItem.builder()
-            .product(productRepository.findById(req.productId()).orElseThrow())
+            .product(productRepository.findById(req.productId())
+                .orElseThrow(() -> new IllegalArgumentException("Product not found")))
             .quantity(req.quantity())
             .build())
         .collect(Collectors.toList());
