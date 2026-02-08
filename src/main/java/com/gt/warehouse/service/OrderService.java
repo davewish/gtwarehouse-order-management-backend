@@ -5,6 +5,8 @@ import com.gt.warehouse.domain.OrderItem;
 import com.gt.warehouse.domain.OrderItemBatchAllocation;
 import com.gt.warehouse.domain.OrderStatus;
 import com.gt.warehouse.dto.CreateOrderRequest;
+import com.gt.warehouse.exception.InvalidOrderStateException;
+import com.gt.warehouse.exception.OrderNotFoundException;
 import com.gt.warehouse.repository.OrderRepository;
 import com.gt.warehouse.repository.ProductRepository;
 import java.util.List;
@@ -56,13 +58,13 @@ public class OrderService {
   @Transactional
   public void cancelOrder(Long orderId) {
     Order order = orderRepository.findById(orderId)
-        .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        .orElseThrow(() -> new OrderNotFoundException("Order not found"));
 
     if (order.getStatus() == OrderStatus.CANCELLED) {
-      throw new IllegalArgumentException("Order already cancelled");
+      throw new InvalidOrderStateException("Order already cancelled");
     }
     if (order.getStatus() == OrderStatus.SHIPPED) {
-      throw new IllegalArgumentException("Cannot cancel shipped order");
+      throw new InvalidOrderStateException("Cannot cancel shipped order");
     }
     for (OrderItem orderItem : order.getItems()) {
       inventoryService.returnStock(orderItem);

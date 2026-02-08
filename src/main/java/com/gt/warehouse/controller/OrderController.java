@@ -10,6 +10,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +31,11 @@ public class OrderController {
 
     OrderResponse response = new OrderResponse(order.getId(), order.getStatus().name(), items);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
+  @PostMapping("/{id}/cancel")
+  public  ResponseEntity<String> cancelOrder(@PathVariable Long id){
+     orderService.cancelOrder(id);
+     return ResponseEntity.ok("Order cancelled successfully");
   }
 
 }
