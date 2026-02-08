@@ -2,6 +2,7 @@ package com.gt.warehouse.controller;
 
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -58,6 +59,14 @@ public class OrderControllerTest {
         .andExpect(jsonPath("$.status").value("CREATED"));
 
 
+  }
+  @Test
+  void shouldCancerOrderSuccessfully() throws Exception {
+    Long orderId=10L;
+    doNothing().when(orderService).cancelOrder(orderId);
+    mockMvc.perform( post("/orders/{id}/cancel",10L).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.message").value("Order cancelled successfully"));
   }
 
 }

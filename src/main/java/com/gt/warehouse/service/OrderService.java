@@ -21,12 +21,14 @@ public class OrderService {
   private final OrderRepository orderRepository;
   private final InventoryService inventoryService;
   private final ProductRepository productRepository;
+  private final OrderMetrics orderMetrics;
 
   public OrderService(OrderRepository orderRepository, InventoryService inventoryService,
-      ProductRepository productRepository) {
+      ProductRepository productRepository, OrderMetrics orderMetrics) {
     this.orderRepository = orderRepository;
     this.inventoryService = inventoryService;
     this.productRepository = productRepository;
+    this.orderMetrics= orderMetrics;
   }
 
 
@@ -51,6 +53,7 @@ public class OrderService {
       List<OrderItemBatchAllocation> allocations = inventoryService.reserveStock(orderItem);
       orderItem.setBatchAllocations(allocations);
     }
+    orderMetrics.increment();
     return orderRepository.save(order);
 
   }

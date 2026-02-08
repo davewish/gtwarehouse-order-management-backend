@@ -7,6 +7,7 @@ import com.gt.warehouse.dto.OrderItemResponse;
 import com.gt.warehouse.dto.OrderResponse;
 import com.gt.warehouse.service.OrderService;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +34,9 @@ public class OrderController {
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
   @PostMapping("/{id}/cancel")
-  public  ResponseEntity<String> cancelOrder(@PathVariable Long id){
+  public  ResponseEntity<Map<String,String>> cancelOrder(@PathVariable Long id){
      orderService.cancelOrder(id);
-     return ResponseEntity.ok("Order cancelled successfully");
+     return ResponseEntity.ok(Map.of("message","Order cancelled successfully"));
   }
 
 }
