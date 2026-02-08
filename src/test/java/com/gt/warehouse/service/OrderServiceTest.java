@@ -1,5 +1,6 @@
 package com.gt.warehouse.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -7,9 +8,13 @@ import static org.mockito.Mockito.when;
 
 import com.gt.warehouse.domain.Order;
 import com.gt.warehouse.domain.OrderItem;
+import com.gt.warehouse.domain.OrderStatus;
 import com.gt.warehouse.domain.Product;
 import com.gt.warehouse.dto.CreateOrderRequest;
 import com.gt.warehouse.dto.OrderItemRequest;
+import com.gt.warehouse.dto.OrderItemResponse;
+import com.gt.warehouse.exception.InvalidOrderStateException;
+import com.gt.warehouse.exception.OrderNotFoundException;
 import com.gt.warehouse.repository.OrderRepository;
 import com.gt.warehouse.repository.ProductRepository;
 import java.util.List;
@@ -47,9 +52,9 @@ public class OrderServiceTest {
     verify(orderRepository).save(any(Order.class));
     verify(inventoryService).reserveStock(any(OrderItem.class));
   }
-  @Test
-  void shouldThrowExceptionWhenProductNotFound(){
 
+  @Test
+  void shouldThrowExceptionWhenProductNotFound() {
 
     OrderItemRequest itemRequest = new OrderItemRequest(2L, 5);
 
@@ -58,8 +63,44 @@ public class OrderServiceTest {
 
     when(productRepository.findById(2L)).thenReturn(Optional.empty());
 
-   assertThrows( IllegalArgumentException.class ,()-> orderService.createOrder(createOrderRequest));
+    assertThrows(IllegalArgumentException.class,
+        () -> orderService.createOrder(createOrderRequest));
 
 
+  }
+
+  @Test
+  void shouldMarkOrderAsCancelled() {
+    Product product = Product.builder().id(1L).sku("1234").name("fdsfsd").build();
+    OrderItem item = OrderItem.builder().id(1L).quantity(10).product(product).build();
+    Order order = Order.builder().id(1L).status(OrderStatus.CREATED).items(List.of(item)).build();
+
+    when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+    orderService.cancelOrder(1L);
+    assertEquals(OrderStatus.CANCELLED, order.getStatus());
+    verify(inventoryService).returnStock(any());
+  }
+
+  @Test
+  void shouldCancelOrderThrowOrderNotFoundWhenOrderNotFound() {
+    Order order = Order.builder().id(1L).items(List.of()).status(OrderStatus.CREATED).build();
+    when(orderRepository.findById(2L)).thenReturn(Optional.empty());
+
+    assertThrows(OrderNotFoundException.class, () -> orderService.cancelOrder(2L));
+
+  }
+
+  @Test
+  void shouldCancelOrderThrowExceptionInvalidOrderStateExceptionWhenCancelledOrder() {
+    Order order = Order.builder().id(1L).status(OrderStatus.CANCELLED).items(List.of()).build();
+    when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+    assertThrows(InvalidOrderStateException.class, () -> orderService.cancelOrder(1L));
+  }
+
+  @Test
+  void shouldCancelOrderThrowExceptionInvalidOrderStateExceptionWhenCancelOrder() {
+    Order order = Order.builder().id(1L).items(List.of()).status(OrderStatus.SHIPPED).build();
+    when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+    assertThrows(InvalidOrderStateException.class, () -> orderService.cancelOrder(1L));
   }
 }

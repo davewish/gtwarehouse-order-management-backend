@@ -69,6 +69,8 @@ public class OrderService {
     for (OrderItem orderItem : order.getItems()) {
       inventoryService.returnStock(orderItem);
     }
+     order.setStatus(OrderStatus.CANCELLED);
+
   }
 }
 
