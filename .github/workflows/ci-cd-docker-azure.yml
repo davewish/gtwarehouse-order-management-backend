@@ -49,6 +49,6 @@
           with:
             app-name: ${{env.AZURE_WEBAPP_NAME}}
             slot-name: demo
-            images: ${{secrets.DOCKER_USERNAME}}/${{IMAGE_NAME}}:latest
+            images: ${{secrets.DOCKER_USERNAME}} / ${{env.IMAGE_NAME}}:latest
 
 
