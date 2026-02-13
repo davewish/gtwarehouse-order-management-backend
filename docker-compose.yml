@@ -1,7 +1,30 @@
-version: '3.8'
+version: "3.9"
 
 services:
-  postgres:
+  app:
+    build: .
+    container_name: warehouse-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+        SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/inventory_db
+        SPRING_DATASOURCE_USERNAME: inventory_user
+        SPRING_DATASOURCE_PASSWORD: StrongPassword123
+
+  postgress-exporter:
+     image: prometheuscommunity/postgres-exporter
+     container_name: postgres-exporter
+     environment:
+       DATA_SOURCE_NAME: "postgres://inventory_user:StrongPassword@123@db:5432/inventory_db?sslmode=disable"
+       ports:
+        -"9187:9187"
+       depends_on:
+         db
+
+
+  db:
     image: postgres:15
     container_name: inventory-postgres
     restart: always
@@ -13,6 +36,32 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - app
+  alertmanager:
+     image: prom/alertmanager
+     container_name: alertmanager
+     ports:
+       - "9093:9093"
+     volumes:
+       - ./prometheus/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+     depends_on:
+       -  prometheus
 
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
 volumes:
   postgres_data:

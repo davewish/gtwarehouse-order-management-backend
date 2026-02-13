@@ -1,0 +1,11 @@
+groups:
+  - name: warehouse-app
+    rules:
+      - alert: warehouseAppDown
+        expr: up{job="warehouse-app"} == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Warehouse app is down"
+          description: "Prometheus cannot scrape warehouse app for 30 seconds"
