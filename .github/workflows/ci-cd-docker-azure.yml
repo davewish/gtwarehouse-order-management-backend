@@ -1,4 +1,4 @@
- name: Warehouse-order-management system
+ name: Warehouse-order-management app
  on:
     push:
       branches:
