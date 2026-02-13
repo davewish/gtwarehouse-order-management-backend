@@ -6,14 +6,15 @@
     pull_request:
       branches:
         - main
+ env:
+   IMAGE_NAME: warehouse-app
+   AZURE_WEBAPP_NAME: warehouse-app-demo
+
  jobs:
     build-test-docker:
       runs-on: ubuntu-latest
-      env:
-        image: mydockerhub/warehouse-app
-        AZURE_WEBAPP_NAME: your-azure-resource-app
-        AZURE_RESOURCE_GROUP: azure-resource-group
-        AZURE_REGION: your-azure-region
+
+
       steps:
         - name: checkout code
           uses: actions/checkout@v3
@@ -33,10 +34,12 @@
             password: ${{secrets.DOCKER_PASSWORD}}
         - name : Build Docker image
           run : | 
-              docker build -t $IMAGE_NAME:${{github.sha}} .
+              docker build -t $IMAGE_NAME:${github.sha} .
+             docker tag $IMAGE_NAME:${github.sha} $IMAGE_NAME:latest
         - name: Push Docker Image
           run: |
-             docker pull $IMAGE_NAME:${{github.sha}}
+             docker push $IMAGE_NAME:${github.sha}
+             docker push $IMAGE_NAME:latest
         - name : Azure Login
           uses : azure/login@v1
           with :
@@ -45,7 +48,7 @@
           uses: azure/webapps-deploy@v2
           with:
             app-name: ${{env.AZURE_WEBAPP_NAME}}
-            slot-name: production
-            images: $IMAGE_NAME:${{github.sa}}
+            slot-name: demo
+            images: ${{secrets.DOCKER_USERNAME}}/${{IMAGE_NAME}}:latest
 
 
