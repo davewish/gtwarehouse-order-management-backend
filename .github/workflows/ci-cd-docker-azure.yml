@@ -38,8 +38,8 @@
             docker tag ${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.IMAGE_NAME }}:latest
         - name: Push Docker Image
           run: |
-            docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-             docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+            docker push ${{secrets.DOCKER_USERNAME}}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+             docker push ${{secrets.DOCKER_USERNAME}}/${{ env.IMAGE_NAME }}:latest
         - name : Azure Login
           uses : azure/login@v1
           with :
