@@ -34,6 +34,8 @@ public class OrderServiceTest {
   private OrderRepository orderRepository;
   @Mock
   private InventoryService inventoryService;
+  @Mock
+  private OrderMetrics orderMetrics;
   @InjectMocks
   private OrderService orderService;
 
