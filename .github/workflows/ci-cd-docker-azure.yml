@@ -35,7 +35,7 @@
         - name : Build Docker image
           run : | 
               docker build -t $IMAGE_NAME:${github.sha} .
-             docker tag $IMAGE_NAME:${github.sha} $IMAGE_NAME:latest
+              docker tag $IMAGE_NAME:${github.sha} $IMAGE_NAME:latest
         - name: Push Docker Image
           run: |
              docker push $IMAGE_NAME:${github.sha}
