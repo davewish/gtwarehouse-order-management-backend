@@ -34,8 +34,8 @@
             password: ${{secrets.DOCKER_PASSWORD}}
         - name : Build Docker image
           run : |
-            docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
-            docker tag ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+            docker build -t ${{ env.IMAGE_NAME }}:${{ github.sha }} .
+            docker tag ${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.IMAGE_NAME }}:latest
         - name: Push Docker Image
           run: |
             docker push ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
