@@ -9,9 +9,9 @@ services:
     depends_on:
       - db
     environment:
-        SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/inventory_db
-        SPRING_DATASOURCE_USERNAME: inventory_user
-        SPRING_DATASOURCE_PASSWORD: StrongPassword123
+        SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+        SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+        SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
 
   postgress-exporter:
      image: prometheuscommunity/postgres-exporter
