@@ -5,6 +5,8 @@ import com.gt.warehouse.domain.OrderItem;
 import com.gt.warehouse.domain.OrderItemBatchAllocation;
 import com.gt.warehouse.domain.OrderStatus;
 import com.gt.warehouse.dto.CreateOrderRequest;
+import com.gt.warehouse.dto.OrderItemResponse;
+import com.gt.warehouse.dto.OrderResponse;
 import com.gt.warehouse.exception.InvalidOrderStateException;
 import com.gt.warehouse.exception.OrderNotFoundException;
 import com.gt.warehouse.repository.OrderRepository;
@@ -75,6 +77,25 @@ public class OrderService {
      order.setStatus(OrderStatus.CANCELLED);
 
   }
+
+  @Transactional
+  public List<OrderResponse> getOrders() {
+    return orderRepository.findAll()
+        .stream()
+        .map(order -> new OrderResponse(
+            order.getId(),
+            order.getStatus().toString(),
+            order.getItems()
+                .stream()
+                .map(item -> new OrderItemResponse(
+                    item.getProduct().getId(),
+                    item.getQuantity()
+                ))
+                .toList()
+        ))
+        .toList();
+  }
+
 }
 
 
