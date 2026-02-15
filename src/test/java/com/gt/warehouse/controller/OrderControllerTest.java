@@ -1,10 +1,13 @@
 package com.gt.warehouse.controller;
 
 
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -15,6 +18,8 @@ import com.gt.warehouse.domain.OrderStatus;
 import com.gt.warehouse.domain.Product;
 import com.gt.warehouse.dto.CreateOrderRequest;
 import com.gt.warehouse.dto.OrderItemRequest;
+import com.gt.warehouse.dto.OrderItemResponse;
+import com.gt.warehouse.dto.OrderResponse;
 import com.gt.warehouse.service.OrderService;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -67,6 +72,21 @@ public class OrderControllerTest {
     mockMvc.perform( post("/orders/{id}/cancel",10L).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.message").value("Order cancelled successfully"));
+  }
+
+  @Test
+  void shouldReturnOrders() throws Exception {
+    OrderItemResponse item= new OrderItemResponse(1L,2);
+    OrderResponse  order= new OrderResponse(100L, "CREATED", List.of(item));
+    when(orderService.getOrders()).thenReturn(List.of(order));
+
+    mockMvc.perform(get("/orders"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].orderId").value(100L))
+        .andExpect(jsonPath("$[0].status").value("CREATED"))
+        .andExpect(jsonPath("$[0].items[0].productId").value(1L))
+        .andExpect(jsonPath("$[0].items[0].quantity").value(2));
+
   }
 
 }

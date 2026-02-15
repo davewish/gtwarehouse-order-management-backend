@@ -13,12 +13,14 @@ import com.gt.warehouse.domain.Product;
 import com.gt.warehouse.dto.CreateOrderRequest;
 import com.gt.warehouse.dto.OrderItemRequest;
 import com.gt.warehouse.dto.OrderItemResponse;
+import com.gt.warehouse.dto.OrderResponse;
 import com.gt.warehouse.exception.InvalidOrderStateException;
 import com.gt.warehouse.exception.OrderNotFoundException;
 import com.gt.warehouse.repository.OrderRepository;
 import com.gt.warehouse.repository.ProductRepository;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -104,5 +106,20 @@ public class OrderServiceTest {
     Order order = Order.builder().id(1L).items(List.of()).status(OrderStatus.SHIPPED).build();
     when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
     assertThrows(InvalidOrderStateException.class, () -> orderService.cancelOrder(1L));
+  }
+  @Test
+  void shouldReturnOrders(){
+    Product product= Product.builder().id(1L).name("cantu").build();
+
+    OrderItem  item = OrderItem.builder().product(product).quantity(2).build();
+    Order order= Order.builder().id(100L).status(OrderStatus.CREATED).items(List.of(item)).build();
+    when(orderRepository.findAll()).thenReturn(List.of(order));
+
+     List<OrderResponse> responses = orderService.getOrders();
+    assertEquals(1,responses.size());
+    OrderResponse response =  responses.get(0);
+    assertEquals(100L, response.orderId());
+    assertEquals("CREATED", response.status());
+
   }
 }
