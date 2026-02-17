@@ -1,6 +1,7 @@
 package com.gt.warehouse.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gt.warehouse.BaseIntegrationTest;
 import com.gt.warehouse.domain.InventoryBatch;
@@ -11,7 +12,8 @@ import com.gt.warehouse.repository.ProductRepository;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.transaction.annotation.Transactional;
+@Transactional
 public class InventoryServiceIT  extends BaseIntegrationTest {
   @Autowired
   private InventoryService inventoryService;
@@ -19,7 +21,7 @@ public class InventoryServiceIT  extends BaseIntegrationTest {
   private ProductRepository productRepository;
   @Autowired
   private InventoryBatchRepository inventoryBatchRepository;
-  @Test
+@Test
   void shouldReserveStockUsingFifo(){
     Product product =
         productRepository.save(
@@ -60,6 +62,15 @@ public class InventoryServiceIT  extends BaseIntegrationTest {
 
     assertEquals(2, updated2.getReservedQuantity());
     assertEquals(10, updated2.getQuantity());
+  }
+  @Test
+  void shouldThrowExceptionWhenStockInsufficient(){
+
+    Product product= productRepository.save(Product.builder().name("bread").sku("brd0123").build());
+    inventoryBatchRepository.save(InventoryBatch.builder().product(product).reservedQuantity(0).quantity(3).expiryDate(LocalDate.of(2026,1,1)).build());
+    OrderItem item= OrderItem.builder().product(product).quantity(10).build();
+    assertThrows(IllegalArgumentException.class, ()->inventoryService.reserveStock(item));
+
   }
 
 

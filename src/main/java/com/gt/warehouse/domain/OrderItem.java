@@ -39,6 +39,7 @@ public class OrderItem {
   private Product product;
 
   @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL)
+  @Builder.Default
   private List<OrderItemBatchAllocation> batchAllocations= new ArrayList<>();
 
   @Column(nullable = false)

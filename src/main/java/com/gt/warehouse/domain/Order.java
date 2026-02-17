@@ -36,6 +36,7 @@ public class Order {
   @Column(nullable = false)
   private OrderStatus status ;
   @OneToMany(mappedBy = "order" ,cascade = CascadeType.ALL)
+  @Builder.Default
   private List<OrderItem> items= new ArrayList<>();
   @Column(nullable = false, updatable = false)
   private LocalDateTime createdAt;

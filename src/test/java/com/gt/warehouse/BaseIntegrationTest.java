@@ -1,7 +1,6 @@
 package com.gt.warehouse;
 
-import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
-import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -12,14 +11,19 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
 @Testcontainers
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
-public class BaseIntegrationTest {
-  @Container
-  static PostgreSQLContainer<?> postgres= new PostgreSQLContainer<>("postgres:15-alpine")
-      .withDatabaseName("testdb")
-      .withUsername("test")
-      .withPassword("test");
+public abstract class BaseIntegrationTest {
+
+  static final PostgreSQLContainer<?> postgres =
+      new PostgreSQLContainer<>("postgres:15-alpine")
+          .withDatabaseName("testdb")
+          .withUsername("test")
+          .withPassword("test");
+
+  static {
+    postgres.start();   // start ONCE for all tests
+  }
+
   @DynamicPropertySource
   static void overrideProps(DynamicPropertyRegistry registry) {
     registry.add("spring.datasource.url", postgres::getJdbcUrl);

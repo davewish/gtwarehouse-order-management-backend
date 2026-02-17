@@ -57,6 +57,7 @@ public class InventoryService {
   public void returnStock(OrderItem orderItem) {
     for (OrderItemBatchAllocation allocation : orderItem.getBatchAllocations()) {
       InventoryBatch batch = allocation.getBatch();
+      batch.setReservedQuantity(batch.getReservedQuantity() - allocation.getQuantityAllocated());
       batch.setQuantity(batch.getQuantity() + allocation.getQuantityAllocated());
     }
   }
