@@ -1,5 +1,4 @@
 package com.gt.warehouse.service;
-
 import com.gt.warehouse.domain.InventoryBatch;
 import com.gt.warehouse.domain.OrderItem;
 import com.gt.warehouse.domain.OrderItemBatchAllocation;
@@ -31,10 +30,12 @@ public class InventoryService {
     for (InventoryBatch batch : batches) {
       if (remaining <= 0) break;
 
-      int available = batch.getQuantity();
-      int toAllocate = Math.min(available, remaining);
+      int available = batch.getQuantity() - batch.getReservedQuantity();
 
-      batch.setQuantity(available - toAllocate);
+      if(available <= 0) continue;
+
+      int toAllocate = Math.min(available, remaining);
+      batch.setReservedQuantity(batch.getReservedQuantity()+ toAllocate);
 
       OrderItemBatchAllocation allocation = new OrderItemBatchAllocation();
       allocation.setOrderItem(orderItem);
