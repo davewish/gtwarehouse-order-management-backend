@@ -22,8 +22,8 @@
             distribution: 'termurin'
             java-version: '17'
 
-        - name: Build and Test
-          run: mvn clean package
+        - name: Build  + Unit + Integration Test
+          run: mvn clean verify
 
         - name: Set up docker Build
           uses: docker/setup-buildx-action@v2
@@ -40,7 +40,7 @@
           run: |
             docker push ${{secrets.DOCKER_HUB_USERNAME}}/${{ env.IMAGE_NAME }}:${{ github.sha }}
              docker push ${{secrets.DOCKER_HUB_USERNAME}}/${{env.IMAGE_NAME }}:latest
-        - name : Azure Login
+        - name : Azure Login0
           uses : azure/login@v1
           with :
             creds : ${{secrets.AZURE_CREDENTIALS}}
