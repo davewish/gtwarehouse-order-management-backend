@@ -27,7 +27,7 @@
         - name: SonarQube Scan
           run : |
             mvn sonar:sonar \
-            -Dsonar.projectKey=warehouse-app \
+            -Dsonar.projectKey=davewish14 \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }}
 
