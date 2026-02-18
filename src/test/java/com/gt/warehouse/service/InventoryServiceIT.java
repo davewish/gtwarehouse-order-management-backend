@@ -63,6 +63,11 @@ public class InventoryServiceIT  extends BaseIntegrationTest {
     assertEquals(2, updated2.getReservedQuantity());
     assertEquals(10, updated2.getQuantity());
   }
+
+  @Test
+  void shouldReturnStock(){
+
+  }
   @Test
   void shouldThrowExceptionWhenStockInsufficient(){
 
