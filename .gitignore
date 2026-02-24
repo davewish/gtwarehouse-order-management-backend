@@ -13,3 +13,6 @@
 
 # Env
 .env
+.terraform/
+*.tfstate
+*.tfstate.*
